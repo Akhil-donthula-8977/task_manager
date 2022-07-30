@@ -1,0 +1,153 @@
+ //  if(error){
+  //    return console.log( 'error')
+  //   }
+  
+  //     const db=client.db(databasename);
+  //      db.collection('users').insertOne({
+  //        _id:id,
+  //          name:'andrew',
+  //          age:25
+  //      })
+
+
+ /*fetching the data from database*///-find({},()=>{}),findOne({},()=>{})
+  //  db.collection('task').findOne({name:'preetham'},(error,user)=>{
+  //    if(error){
+  //      console.log('error')
+  //    }
+  //    console.log(user)
+  //  })
+
+
+
+
+
+  //searching data by _id
+  /* db.collection('task').findOne({_id:ObjectID("62bacfe134fcf24fa49a51d6")},(error,user)=>{
+    if(error){
+      console.log('error')
+    }
+    console.log(user)
+  })*/ 
+  //find(query,option)--returns cursor to the query data in database
+  //find(query,option).toarray((error,data)=>{console.log(data)})--returns array of documents matched to query
+  //find(query,option).count((error,count)=>{console.log(count)})--returns the count<integer> of required document
+
+
+
+  /*way top update a specific document-using updateOne(filter,update value,callback)
+    note:if any callback is not provided then it will trun into promise*/
+db.collection('task').updateOne({_id:new ObjectID("62bacfe134fcf24fa49a51d6")},{$set:{
+  quality:"worst fellow:))"
+}}).then((result)=>{
+  console.log(result)
+}).catch((error)=>{
+  console.log(error)
+})
+matchedCount: 1,modifiedcount:1//importanat output in result
+
+
+
+ //deleting document by deletemany
+ db.collection('task').deleteMany({
+  age:50
+ }).then((result)=>{
+   console.log("deleted")
+ }).catch((error)=>{
+  console.log("error")
+ })
+
+
+-model with validation 
+ const user=mongoose.model('user',{
+    name:{
+          type:String,
+          required:true
+    },
+    age:{
+      
+       type:Number,
+       validate(value){
+        if(value<=0){
+            throw new error("not valid")
+        }
+    }
+    },
+    phonenumber:{
+        type:Number,
+       
+    },
+    email:{
+        type:String,
+        trim:true,
+        validate(value){
+            if(!validatior.isEmail(value)){
+                throw new error("error in email")
+            }
+        }
+    }
+  
+})
+//user is a constructor
+const user1=new user({
+    name:'akhil',
+    age:'18',
+    phonenumber:60304004,
+    email:'akhil.donthula8977@gmail.com'
+})
+user1.save().then(()=>{console.log(user1)})
+.catch((error)=>{console.log(error)})
+
+fetching the data by model methods
+app.get('/users',(req,res)=>{
+   User.find({}).then((users)=>{
+       res.send(users)
+   }).catch((e)=>{
+       res.status(400).send()
+   })
+})
+
+app.get('/users/:id',(req,res)=>{
+    const id=req.params.id;
+   
+    User.findById(id).then((user)=>{
+        if(!User){
+            res.status(404).send()
+        }
+        res.send(user)
+    }).catch((e)=>{
+        res.status(404).send()
+    })
+})
+
+
+
+
+
+//creating and storing data in database
+app.post('/users',(req,res)=>{
+   const user=new User(req.body);
+
+    user.save().then(()=>{
+         res.send(user)
+    }).catch((e)=>{
+        res.status(400)//use this before sending the response 
+        res.send(e);
+       
+        // res.send("error")
+    })
+
+})
+app.post('/tasks',(req,res)=>{
+    const task=new Task(req.body);
+
+    task.save().then(()=>{
+         res.send(task)
+    }).catch((e)=>{
+        //res.status(400)//use this before sending the response 
+        // res.send(e);
+       
+        // res.send("error")
+    })
+
+})
